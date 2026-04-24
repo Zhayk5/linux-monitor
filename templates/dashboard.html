@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Linux Monitor Dashboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #111;
+            color: white;
+            text-align: center;
+        }
+
+        table {
+            margin: auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid white;
+            padding: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>📊 Linux Monitor Dashboard</h1>
+
+<canvas id="cpuChart" width="600" height="300"></canvas>
+
+<h2>Últimas métricas</h2>
+
+<table id="metricsTable">
+    <tr>
+        <th>Time</th>
+        <th>CPU</th>
+        <th>RAM</th>
+        <th>Disk</th>
+    </tr>
+</table>
+
+<script>
+async function loadData() {
+    const res = await fetch('/metrics');
+    const data = await res.json();
+
+    // Tabla
+    const table = document.getElementById("metricsTable");
+
+    data.forEach(row => {
+        let tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${row.timestamp}</td>
+            <td>${row.cpu}</td>
+            <td>${row.memory}</td>
+            <td>${row.disk}</td>
+        `;
+
+        table.appendChild(tr);
+    });
+
+    // Gráfica CPU
+    const labels = data.map(d => d.timestamp).reverse();
+    const cpuData = data.map(d => d.cpu).reverse();
+
+    const ctx = document.getElementById('cpuChart');
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'CPU %',
+                data: cpuData,
+                borderColor: 'lime',
+                fill: false
+            }]
+        }
+    });
+}
+
+loadData();
+</script>
+
+</body>
+</html>
