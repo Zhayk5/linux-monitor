@@ -1,3 +1,7 @@
+## Dashboard Preview
+
+![Dashboard](images/dashboard.png)
+
 # Linux Monitoring System
 
 ## Overview
